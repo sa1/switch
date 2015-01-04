@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require 'etc'
+
 Image = Struct.new :repository, :tag, :id, :created, :size
 
 def images
@@ -46,12 +48,16 @@ end
 
 def build(name)
   repository, tag = name.split(':')
+  system "docker build -t switch/base:1 #{File.join 'Dockerfiles', 'base', '1'}"
   system "docker build -t switch/#{name} #{File.join 'Dockerfiles', repository, tag}"
 end
 
 def switch(name, args)
+  uid = Process.uid
+  username = Etc.getlogin
+  shell = ENV['SHELL']
   cmdline = ""
-  cmdline << "docker run -it -v $HOME:$HOME " << args << "-w $HOME switch/#{name}"
+  cmdline << "docker run -it -v $HOME:$HOME " << args << "-w $HOME switch/#{name} /bin/bash /usr/local/bin/start.sh #{username} #{uid} #{shell}"
   system cmdline
 end
 
