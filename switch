@@ -54,10 +54,11 @@ end
 
 def switch(name, args)
   uid = Process.uid
+  gid = Process.gid
   username = Etc.getlogin
   shell = ENV['SHELL']
   cmdline = ""
-  cmdline << "docker run -it -v $HOME:$HOME " << args << "-w $HOME switch/#{name} /bin/bash /usr/local/bin/start.sh #{username} #{uid} #{shell}"
+  cmdline << "docker run -it -v $HOME:$HOME " << args << "-w $HOME switch/#{name} /bin/bash /usr/local/bin/start.sh #{username} #{uid} #{gid} #{shell}"
   system cmdline
 end
 
